@@ -1,35 +1,90 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Box } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import Login from './components/Login';
+import AdminDashboard from './components/AdminDashboard';
+import SupervisorDashboard from './components/SupervisorDashboard';
+import UserDashboard from './components/UserDashboard';
+import VehicleMap from './components/VehicleMap';
+import VehicleList from './components/VehicleList';
+import Reports from './components/Reports';
+import UserManagement from './components/UserManagement';
+import Sidebar from './components/Navbar';
+import { authAPI } from './services/api';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      authAPI.getProfile()
+        .then(response => {
+          setIsAuthenticated(true);
+          setUserRole(response.data.role);
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) {
+    return <div>Chargement...</div>;
+  }
+
+  const getDashboard = () => {
+    if (userRole === 'admin') return <AdminDashboard />;
+    if (userRole === 'supervisor') return <SupervisorDashboard />;
+    return <UserDashboard />;
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        {isAuthenticated ? (
+          <Box sx={{ display: 'flex' }}>
+            <Sidebar setIsAuthenticated={setIsAuthenticated} userRole={userRole} />
+            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+              <Routes>
+                <Route path="/" element={getDashboard()} />
+                <Route path="/map" element={<VehicleMap />} />
+                <Route path="/vehicles" element={<VehicleList userRole={userRole} />} />
+                <Route path="/reports" element={<Reports userRole={userRole} />} />
+                {userRole === 'admin' && <Route path="/users" element={<UserManagement />} />}
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </Box>
+          </Box>
+        ) : (
+          <Routes>
+            <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setUserRole={setUserRole} />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </Routes>
+        )}
+      </Router>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;

@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2ngx6kkzbt__j!mhn5_=&jwe#$ujn^8f=3rz%5+-rcl0e2gzyu'
+SECRET_KEY = 'django-insecure-kazi@k7ps6op9q(%sogi9qxty&(%o545xz9l9(b4y09e2r1c%s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,14 +41,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'django_filters',
-    'channels',
-    'core',
     'users',
     'vehicles',
     'devices',
     'tracking',
-    'fuel',
     'drivers',
+    'fuel',
     'alerts',
     'reports',
 ]
@@ -134,6 +132,9 @@ STATIC_URL = 'static/'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Custom User Model
+AUTH_USER_MODEL = 'users.User'
+
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
@@ -161,12 +162,12 @@ from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
-# Channels
-ASGI_APPLICATION = 'backend.asgi.application'
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
-    }
-}
+# Internationalization
+LANGUAGE_CODE = 'fr-fr'
+TIME_ZONE = 'Africa/Abidjan'
+USE_I18N = True
+USE_TZ = True
