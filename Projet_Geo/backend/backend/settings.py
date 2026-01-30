@@ -25,7 +25,13 @@ SECRET_KEY = 'django-insecure-kazi@k7ps6op9q(%sogi9qxty&(%o545xz9l9(b4y09e2r1c%s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost',
+    '127.0.0.1',
+    '192.168.43.35',  # Adress IP actuelle
+    '192.168.11.134',  #  L'autre IP
+    '0.0.0.0',         # Toutes les interfaces réseau
+    # Ajoutez d'autres IP si nécessaire
+]
 
 
 # Application definition
@@ -42,13 +48,13 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'users',
-    'vehicles',
-    'devices',
-    'tracking',
-    'drivers',
-    'fuel',
-    'alerts',
-    'reports',
+    'plugins.vehicles',
+    'plugins.devices',
+    'plugins.tracking',
+    'plugins.drivers',
+    'plugins.fuel',
+    'plugins.alerts',
+    'plugins.reports',
 ]
 
 MIDDLEWARE = [
@@ -115,12 +121,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+# Internationalization
+LANGUAGE_CODE = 'fr-fr'
+TIME_ZONE = 'Africa/Ouagadougou'
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -139,7 +143,11 @@ AUTH_USER_MODEL = 'users.User'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
+    'http://192.168.43.35:5173',
+    'http://192.168.11.134:5173',  
+    'http://0.0.0.0:5173',
 ]
+
 CORS_ALLOW_CREDENTIALS = True
 
 # REST Framework
@@ -166,8 +174,4 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
-# Internationalization
-LANGUAGE_CODE = 'fr-fr'
-TIME_ZONE = 'Africa/Abidjan'
-USE_I18N = True
-USE_TZ = True
+

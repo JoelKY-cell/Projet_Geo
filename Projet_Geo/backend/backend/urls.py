@@ -9,6 +9,6 @@ urlpatterns = [
     path('api/auth/', include('users.urls')),
     path('api/', include('core.urls')),
     path('api/', include('users.urls')),
-    path('api/vehicles/', include('vehicles.urls')),
-    path('api/tracking/', include('tracking.urls')),
+    path('api/vehicles/', include('plugins.vehicles.urls')),
+    path('api/tracking/', include('plugins.tracking.urls')),
 ]

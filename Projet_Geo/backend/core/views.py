@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum, Count, Avg
-from vehicles.models import Vehicle
-from tracking.models import Position, Trip
-from alerts.models import Alert
-from fuel.models import FuelEvent
+from plugins.vehicles.models import Vehicle
+from plugins.tracking.models import Position, Trip
+from plugins.alerts.models import Alert
+from plugins.fuel.models import FuelEvent
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -68,7 +68,7 @@ def dashboard_stats(request):
     
     # Statistiques admin uniquement
     if user.is_admin():
-        from drivers.models import DriverSession
+        from plugins.drivers.models import DriverSession
         active_sessions = DriverSession.objects.filter(is_active=True).count()
         stats['drivers'] = {
             'active_sessions': active_sessions
