@@ -22,6 +22,7 @@ const Login = ({ setIsAuthenticated, setUserRole }) => {
       localStorage.setItem('refreshToken', response.data.refresh);
       
       const profileResponse = await authAPI.getProfile();
+      localStorage.setItem('user', JSON.stringify(profileResponse.data));
       setUserRole(profileResponse.data.role);
       setIsAuthenticated(true);
     } catch (err) {
@@ -203,28 +204,6 @@ const Login = ({ setIsAuthenticated, setUserRole }) => {
           >
             Facebook
           </Button>
-        </Box>
-
-        <Box
-          sx={{
-            mt: 2,
-            p: 1.5,
-            bgcolor: '#f5f7fa',
-            borderRadius: '12px',
-          }}
-        >
-          <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 0.5, fontSize: '11px' }}>
-            Comptes de test :
-          </Typography>
-          <Typography variant="caption" sx={{ display: 'block', fontSize: '10px', mb: 0.3 }}>
-            <strong>Admin:</strong> admin / admin123
-          </Typography>
-          <Typography variant="caption" sx={{ display: 'block', fontSize: '10px', mb: 0.3 }}>
-            <strong>Superviseur:</strong> supervisor / super123
-          </Typography>
-          <Typography variant="caption" sx={{ display: 'block', fontSize: '10px' }}>
-            <strong>Utilisateur:</strong> user / user123
-          </Typography>
         </Box>
       </Box>
     </Box>

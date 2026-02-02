@@ -5,12 +5,14 @@ import { Box } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Login from './components/Login';
 import AdminDashboard from './components/AdminDashboard';
+import SystemAdminDashboard from './components/SystemAdminDashboard';
 import SupervisorDashboard from './components/SupervisorDashboard';
 import UserDashboard from './components/UserDashboard';
 import VehicleMap from './components/VehicleMap';
 import VehicleList from './components/VehicleList';
 import Reports from './components/Reports';
 import UserManagement from './components/UserManagement';
+import CompanyManagement from './components/CompanyManagement';
 import Sidebar from './components/Navbar';
 import { authAPI } from './services/api';
 
@@ -53,6 +55,7 @@ function App() {
   }
 
   const getDashboard = () => {
+    if (userRole === 'super_admin') return <SystemAdminDashboard />;
     if (userRole === 'admin') return <AdminDashboard />;
     if (userRole === 'supervisor') return <SupervisorDashboard />;
     return <UserDashboard />;
@@ -65,13 +68,15 @@ function App() {
         {isAuthenticated ? (
           <Box sx={{ display: 'flex' }}>
             <Sidebar setIsAuthenticated={setIsAuthenticated} userRole={userRole} />
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 0, m: 0 }}>
               <Routes>
                 <Route path="/" element={getDashboard()} />
                 <Route path="/map" element={<VehicleMap />} />
                 <Route path="/vehicles" element={<VehicleList userRole={userRole} />} />
                 <Route path="/reports" element={<Reports userRole={userRole} />} />
-                {userRole === 'admin' && <Route path="/users" element={<UserManagement />} />}
+                {(userRole === 'admin' || userRole === 'supervisor') && <Route path="/users" element={<UserManagement />} />}
+                {userRole === 'super_admin' && <Route path="/companies" element={<CompanyManagement />} />}
+                {userRole === 'super_admin' && <Route path="/users" element={<UserManagement />} />}
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </Box>

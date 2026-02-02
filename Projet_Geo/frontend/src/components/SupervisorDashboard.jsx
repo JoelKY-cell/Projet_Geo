@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Container, Grid, Card, CardContent, Typography, Box, CircularProgress,
-  List, ListItem, ListItemText, Chip
-} from '@mui/material';
-import {
-  DirectionsCar, Speed, Warning, Person
-} from '@mui/icons-material';
+import { useState, useEffect } from 'react';
+import { Box, CircularProgress } from '@mui/material';
+import { DirectionsCar, Speed, Warning, Person, TrendingUp, Notifications as NotificationsIcon } from '@mui/icons-material';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import { dashboardAPI } from '../services/api';
 
 const SupervisorDashboard = () => {
@@ -32,136 +29,156 @@ const SupervisorDashboard = () => {
     return <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh"><CircularProgress /></Box>;
   }
 
-  const StatCard = ({ title, value, icon, gradient, subtitle }) => (
-    <Card sx={{ 
-      height: '100%',
-      background: gradient,
-      color: 'white',
-      borderRadius: '16px',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-      transition: 'transform 0.2s',
-      '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 8px 30px rgba(0,0,0,0.15)' }
+  const StatCard = ({ title, value, icon: Icon, color, trend, trendValue }) => (
+    <div style={{ 
+      background: 'rgba(255, 255, 255, 0.9)', 
+      backdropFilter: 'blur(20px)',
+      borderRadius: '12px', 
+      padding: '12px 14px', 
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      boxShadow: '0 8px 32px rgba(31, 38, 135, 0.15)',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      cursor: 'pointer',
+      position: 'relative',
+      overflow: 'hidden'
+    }} 
+    onMouseEnter={(e) => { 
+      e.currentTarget.style.transform = 'translateY(-4px)'; 
+      e.currentTarget.style.boxShadow = '0 12px 36px rgba(31, 38, 135, 0.2)';
+    }} 
+    onMouseLeave={(e) => { 
+      e.currentTarget.style.transform = 'translateY(0)'; 
+      e.currentTarget.style.boxShadow = '0 8px 32px rgba(31, 38, 135, 0.15)';
     }}>
-      <CardContent>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
-          <Typography variant="body2" sx={{ opacity: 0.9, fontWeight: 500 }}>{title}</Typography>
-          {icon}
-        </Box>
-        <Typography variant="h3" fontWeight="700" mb={0.5}>{value}</Typography>
-        {subtitle && <Typography variant="body2" sx={{ opacity: 0.8 }}>{subtitle}</Typography>}
-      </CardContent>
-    </Card>
+      <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '50px', height: '50px', background: color, opacity: 0.1, borderRadius: '50%' }}></div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+        <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${color}40` }}>
+          <Icon style={{ fontSize: '18px', color: 'white' }} />
+        </div>
+        {trend && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 6px', borderRadius: '12px', background: trend === 'up' ? '#10b98120' : '#ef444420', color: trend === 'up' ? '#10b981' : '#ef4444', fontSize: '9px', fontWeight: '600' }}>
+            <TrendingUp style={{ fontSize: '10px', transform: trend === 'down' ? 'rotate(180deg)' : 'none' }} />
+            {trendValue}
+          </div>
+        )}
+      </div>
+      <div style={{ fontSize: '10px', color: '#64748b', fontWeight: '500', marginBottom: '4px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>{title}</div>
+      <div style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', letterSpacing: '-0.5px' }}>{value}</div>
+    </div>
   );
 
   return (
-    <Box sx={{ background: '#f5f7fa', minHeight: '100vh', py: 3 }}>
-      <Container maxWidth="lg">
-        <Typography variant="h4" fontWeight="700" mb={3} color="#2d3748">
-          Tableau de bord Superviseur
-        </Typography>
+    <Box sx={{ 
+      background: '#f1f5f9', 
+      minHeight: '100vh', 
+      p: 4, 
+      pl: 4, 
+      pr: 0, 
+      m: 0, 
+      width: '100%',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    }}>
+      <div style={{ width: '100%', margin: '0', padding: '0 20px 0 0' }}>
         
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Véhicules actifs" 
-              value={stats?.vehicles?.active || 0}
-              icon={<DirectionsCar sx={{ fontSize: 40, opacity: 0.9 }} />}
-              gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-              subtitle={`Total: ${stats?.vehicles?.total || 0}`}
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Conducteurs" 
-              value={stats?.drivers?.total || 0}
-              icon={<Person sx={{ fontSize: 40, opacity: 0.9 }} />}
-              gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
-              subtitle={`En service: ${stats?.drivers?.active_sessions || 0}`}
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Alertes" 
-              value={stats?.alerts?.unacknowledged || 0}
-              icon={<Warning sx={{ fontSize: 40, opacity: 0.9 }} />}
-              gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
-              subtitle="À traiter"
-            />
-          </Grid>
-          
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Distance du jour" 
-              value={`${stats?.trips?.total_distance || 0} km`}
-              icon={<Speed sx={{ fontSize: 40, opacity: 0.9 }} />}
-              gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
-            />
-          </Grid>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <div>
+            <h1 style={{ color: '#0f172a', margin: 0, fontSize: '24px', fontWeight: '700', letterSpacing: '-0.5px' }}>Tableau de bord Superviseur</h1>
+            <p style={{ color: '#64748b', margin: '4px 0 0 0', fontSize: '13px', fontWeight: '400' }}>Supervision de la flotte</p>
+          </div>
+          <div style={{ 
+            position: 'relative', 
+            cursor: 'pointer', 
+            background: 'white', 
+            width: '40px', 
+            height: '40px', 
+            borderRadius: '12px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+          }}>
+            <NotificationsIcon sx={{ fontSize: 20, color: '#64748b' }} />
+            <div style={{ position: 'absolute', top: 8, right: 8, background: '#ef4444', borderRadius: '50%', width: 7, height: 7, border: '2px solid white' }}></div>
+          </div>
+        </div>
+        
+        {/* Stats Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+          <StatCard title="Véhicules actifs" value={stats?.vehicles?.active || 0} icon={DirectionsCar} color="#3b82f6" trend="up" trendValue={`${stats?.vehicles?.total || 0} total`} />
+          <StatCard title="Conducteurs" value={stats?.drivers?.total || 0} icon={Person} color="#8b5cf6" trendValue={`${stats?.drivers?.active_sessions || 0} actifs`} />
+          <StatCard title="Alertes" value={stats?.alerts?.unacknowledged || 0} icon={Warning} color="#ef4444" />
+          <StatCard title="Distance du jour" value={`${stats?.trips?.total_distance || 0} km`} icon={Speed} color="#10b981" />
+        </div>
 
-          <Grid item xs={12} md={6}>
-            <Card sx={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', height: '100%' }}>
-              <CardContent>
-                <Typography variant="h6" fontWeight="600" mb={2} color="#2d3748">
-                  Alertes actives
-                </Typography>
-                <List>
-                  {stats?.alerts?.recent?.slice(0, 5).map((alert, idx) => (
-                    <ListItem 
-                      key={idx}
-                      sx={{ 
-                        borderRadius: '8px',
-                        mb: 1,
-                        bgcolor: '#f8f9fa',
-                        '&:hover': { bgcolor: '#e9ecef' }
-                      }}
-                    >
-                      <ListItemText 
-                        primary={<Typography fontWeight="600">{alert.type}</Typography>}
-                        secondary={`Véhicule: ${alert.vehicle}`}
-                      />
-                      <Chip 
-                        label={alert.severity} 
-                        color={alert.severity === 'high' ? 'error' : 'warning'}
-                        size="small"
-                      />
-                    </ListItem>
-                  )) || <ListItem><ListItemText primary="Aucune alerte" /></ListItem>}
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
+        {/* Main Content */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          
+          {/* Map */}
+          <div style={{ 
+            background: 'rgba(255, 255, 255, 0.95)', 
+            backdropFilter: 'blur(20px)',
+            borderRadius: '16px', 
+            padding: '24px',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            boxShadow: '0 8px 32px rgba(31, 38, 135, 0.15)',
+            height: '500px'
+          }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', color: '#0f172a', fontWeight: '700', letterSpacing: '-0.3px' }}>Carte en temps réel</h3>
+            <div style={{ height: 'calc(100% - 40px)', borderRadius: '12px', overflow: 'hidden' }}>
+              <MapContainer 
+                center={[-6.1659, 35.7516]} 
+                zoom={13} 
+                style={{ height: '100%', width: '100%' }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+              </MapContainer>
+            </div>
+          </div>
 
-          <Grid item xs={12} md={6}>
-            <Card sx={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', height: '100%' }}>
-              <CardContent>
-                <Typography variant="h6" fontWeight="600" mb={2} color="#2d3748">
-                  Statistiques flotte
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography color="textSecondary">Trajets aujourd'hui</Typography>
-                    <Chip label={stats?.trips?.today_count || 0} color="primary" />
-                  </Box>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography color="textSecondary">Vitesse moyenne</Typography>
-                    <Chip label={`${stats?.trips?.avg_speed || 0} km/h`} color="info" />
-                  </Box>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography color="textSecondary">Événements carburant</Typography>
-                    <Chip label={stats?.fuel?.events_today || 0} color="success" />
-                  </Box>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography color="textSecondary">Boîtiers GPS</Typography>
-                    <Chip label={stats?.devices?.total || 0} color="secondary" />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Container>
+          {/* Fleet Stats */}
+          <div style={{ 
+            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.95) 0%, rgba(37, 99, 235, 0.95) 100%)', 
+            backdropFilter: 'blur(20px)',
+            borderRadius: '16px', 
+            padding: '24px',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
+            color: 'white'
+          }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: '700', letterSpacing: '-0.3px' }}>Statistiques flotte</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {[
+                { label: 'Trajets aujourd\'hui', value: stats?.trips?.today_count || 0, icon: '🚗' },
+                { label: 'Vitesse moyenne', value: `${stats?.trips?.avg_speed || 0} km/h`, icon: '⚡' },
+                { label: 'Événements carburant', value: stats?.fuel?.events_today || 0, icon: '⛽' },
+                { label: 'Boîtiers GPS', value: stats?.devices?.total || 0, icon: '📡' }
+              ].map((item, i) => (
+                <div key={i} style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  padding: '16px', 
+                  background: 'rgba(255, 255, 255, 0.15)', 
+                  borderRadius: '12px',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '18px' }}>{item.icon}</span>
+                    <span style={{ fontSize: '14px', fontWeight: '500' }}>{item.label}</span>
+                  </div>
+                  <strong style={{ fontSize: '18px', fontWeight: '700' }}>{item.value}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </Box>
   );
 };

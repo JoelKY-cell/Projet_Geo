@@ -1,9 +1,8 @@
 from django.db import models
+from core.models import BaseModel
 
-class Vehicle(models.Model):
-    """
-    Modèle pour la gestion des véhicules/actifs mobiles
-    """
+class Vehicle(BaseModel):
+    """Modèle pour la gestion des véhicules/actifs mobiles"""
     VEHICLE_TYPES = [
         ('car', 'Véhicule'),
         ('motorcycle', 'Moto'),
@@ -12,25 +11,17 @@ class Vehicle(models.Model):
         ('other', 'Autre'),
     ]
     
-    # Informations de base
-    license_plate = models.CharField(max_length=20, unique=True, verbose_name="Immatriculation")
+    company = models.ForeignKey('core.Company', on_delete=models.CASCADE, related_name='vehicles', null=True, blank=True)
+    license_plate = models.CharField(max_length=20, verbose_name="Immatriculation")
     vehicle_type = models.CharField(max_length=20, choices=VEHICLE_TYPES, verbose_name="Type")
     brand = models.CharField(max_length=50, blank=True, verbose_name="Marque")
     model = models.CharField(max_length=50, blank=True, verbose_name="Modèle")
     year = models.IntegerField(null=True, blank=True, verbose_name="Année")
     color = models.CharField(max_length=30, blank=True, verbose_name="Couleur")
-    
-    # Caractéristiques techniques
     fuel_capacity = models.FloatField(null=True, blank=True, verbose_name="Capacité carburant (L)")
     fuel_type = models.CharField(max_length=20, blank=True, verbose_name="Type de carburant")
-    
-    # Statut et gestion
     is_active = models.BooleanField(default=True, verbose_name="Actif")
     notes = models.TextField(blank=True, verbose_name="Notes")
-    
-    # Dates
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
         db_table = 'vehicles'
@@ -39,4 +30,4 @@ class Vehicle(models.Model):
         ordering = ['license_plate']
     
     def __str__(self):
-        return f"{self.license_plate} ({self.get_vehicle_type_display()})"
+        return f"{self.license_plate} ({self.company.name})"
