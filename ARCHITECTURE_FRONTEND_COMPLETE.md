@@ -1,6 +1,6 @@
-# 🎨 ARCHITECTURE FRONTEND - PLATEFORME GPS SAAS
+#  ARCHITECTURE FRONTEND - PLATEFORME GPS SAAS
 
-## 📋 STRUCTURE COMPLÈTE
+##  STRUCTURE COMPLÈTE
 
 ```
 frontend/src/
@@ -96,9 +96,9 @@ frontend/src/
 
 ---
 
-## 👤 DASHBOARDS PAR RÔLE
+##  DASHBOARDS PAR RÔLE
 
-### 🔹 Super Admin Dashboard
+###  Super Admin Dashboard
 **Objectif**: Vue globale du système
 
 **Composants**:
@@ -116,7 +116,7 @@ frontend/src/
 
 ---
 
-### 🔹 Admin Entreprise Dashboard
+###  Admin Entreprise Dashboard
 **Objectif**: Gestion complète de l'entreprise
 
 **Composants**:
@@ -135,7 +135,7 @@ frontend/src/
 
 ---
 
-### 🔹 Superviseur Dashboard
+###  Superviseur Dashboard
 **Objectif**: Supervision opérationnelle
 
 **Composants**:
@@ -151,7 +151,7 @@ frontend/src/
 
 ---
 
-### 🔹 Utilisateur Dashboard
+###  Utilisateur Dashboard
 **Objectif**: Consultation
 
 **Composants**:
@@ -164,20 +164,20 @@ frontend/src/
 
 ---
 
-## 🗺️ MODULE TRACKING (CŒUR UX)
+##  MODULE TRACKING (CŒUR UX)
 
 ### Fonctionnalités
-✅ Carte interactive temps réel
-✅ Points GPS animés
-✅ Info-window détaillée:
+ Carte interactive temps réel
+ Points GPS animés
+ Info-window détaillée:
    - Véhicule
    - Vitesse actuelle
    - État moteur
    - Dernière remontée
-✅ Filtrage par véhicule
-✅ Filtrage par date
-✅ Lecture historique (replay)
-✅ WebSocket pour live updates
+ Filtrage par véhicule
+ Filtrage par date
+ Lecture historique (replay)
+ WebSocket pour live updates
 
 ### Technologies
 - **Google Maps API** ou **Leaflet + OpenStreetMap**
@@ -186,7 +186,7 @@ frontend/src/
 
 ---
 
-## ⚡ TEMPS RÉEL (WEBSOCKET)
+##  TEMPS RÉEL (WEBSOCKET)
 
 ### Événements
 ```javascript
@@ -212,7 +212,7 @@ websocket.on('vehicle_status', (status) => {
 
 ---
 
-## 🔐 AUTHENTIFICATION & ROUTING
+##  AUTHENTIFICATION & ROUTING
 
 ### Routes Protégées
 ```javascript
@@ -240,7 +240,7 @@ if (role === 'user') navigate('/map');
 
 ---
 
-## 🎨 DESIGN SYSTEM
+##  DESIGN SYSTEM
 
 ### Couleurs
 ```javascript
@@ -260,7 +260,7 @@ info: '#2196f3'         // Bleu clair
 
 ---
 
-## 📦 DÉPENDANCES
+##  DÉPENDANCES
 
 ```json
 {
@@ -281,7 +281,7 @@ info: '#2196f3'         // Bleu clair
 
 ---
 
-## 🚀 INSTALLATION
+##  INSTALLATION
 
 ```bash
 cd frontend
@@ -293,21 +293,21 @@ npm run dev
 
 ---
 
-## 📊 MODULES MÉTIER
+##  MODULES MÉTIER
 
-### ⛽ Module Carburant
+###  Module Carburant
 - Courbe de consommation (Recharts)
 - Détection vidange (alertes visuelles)
 - Comparaison distance/carburant
 - Export données
 
-### 🚨 Module Alertes
+###  Module Alertes
 - Liste temps réel
 - Notifications badge
 - Filtrage par type/sévérité
 - Historique avec recherche
 
-### 📊 Module Rapports
+###  Module Rapports
 - Sélection période
 - Génération PDF/Excel
 - Téléchargement
@@ -315,9 +315,9 @@ npm run dev
 
 ---
 
-## ✅ CHECKLIST IMPLÉMENTATION
+##  CHECKLIST IMPLÉMENTATION
 
-### Phase 1: Base ✅
+### Phase 1: Base 
 - [x] Structure dossiers
 - [x] ProtectedRoute
 - [x] SuperAdminLayout
@@ -348,7 +348,7 @@ npm run dev
 
 ---
 
-## 🎯 RÉSUMÉ
+##  RÉSUMÉ
 
 **Architecture complète** → Layouts, Dashboards, Modules
 **Temps réel** → WebSocket + Fallback polling
@@ -356,4 +356,4 @@ npm run dev
 **UX moderne** → Material UI + Responsive
 **Production-ready** → Structure scalable
 
-**Frontend SaaS GPS professionnel!** 🎉
+**Frontend SaaS GPS professionnel!** 

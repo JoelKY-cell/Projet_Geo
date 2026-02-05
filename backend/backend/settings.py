@@ -142,8 +142,11 @@ AUTH_USER_MODEL = 'users.User'
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
     'http://localhost:5173',
+    'http://127.0.0.1:3000',
     'http://127.0.0.1:5173',
+    'http://192.168.43.35:3000',
     'http://192.168.43.35:5173',
     'http://192.168.11.134:5173',  
     'http://0.0.0.0:5173',
