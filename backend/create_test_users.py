@@ -17,31 +17,45 @@ def create_test_users():
     # Créer une entreprise de test si elle n'existe pas
     company, created = Company.objects.get_or_create(
         name='Tanga GPS Demo',
-        defaults={
-            'address': 'Dar es Salaam, Tanzania',
-            'phone': '+255 123 456 789',
-            'email': 'contact@tangagps.com'
-        }
+        defaults={'is_active': True}
     )
     if created:
         print('✅ Entreprise de test créée')
     else:
         print('ℹ️  Entreprise de test existe déjà')
     
-    # Administrateur (super_admin - pas besoin de company)
+    # Super Admin (pas d'entreprise - accès global)
+    if not User.objects.filter(username='superadmin').exists():
+        superadmin = User.objects.create_superuser(
+            username='superadmin',
+            email='superadmin@tangagps.com',
+            password='super123',
+            first_name='Super',
+            last_name='Admin'
+        )
+        superadmin.role = 'super_admin'
+        superadmin.company = None
+        superadmin.save()
+        print('✅ Super Admin créé (accès global)')
+    else:
+        print('ℹ️  Super Admin existe déjà')
+    
+    # Admin de l'entreprise
     if not User.objects.filter(username='admin').exists():
-        admin = User.objects.create_superuser(
+        admin = User.objects.create_user(
             username='admin',
             email='admin@tangagps.com',
             password='admin123',
             first_name='Admin',
-            last_name='System'
+            last_name='Company'
         )
-        admin.role = 'super_admin'
+        admin.role = 'admin'
+        admin.company = company
+        admin.is_staff = True
         admin.save()
-        print('✅ Utilisateur admin créé')
+        print('✅ Admin entreprise créé')
     else:
-        print('ℹ️  Utilisateur admin existe déjà')
+        print('ℹ️  Admin entreprise existe déjà')
     
     # Superviseur
     if not User.objects.filter(username='supervisor').exists():
@@ -55,9 +69,9 @@ def create_test_users():
         supervisor.role = 'supervisor'
         supervisor.company = company
         supervisor.save()
-        print('✅ Utilisateur supervisor créé')
+        print('✅ Superviseur créé')
     else:
-        print('ℹ️  Utilisateur supervisor existe déjà')
+        print('ℹ️  Superviseur existe déjà')
     
     # Utilisateur simple
     if not User.objects.filter(username='user').exists():
@@ -71,11 +85,15 @@ def create_test_users():
         user.role = 'user'
         user.company = company
         user.save()
-        print('✅ Utilisateur user créé')
+        print('✅ Utilisateur simple créé')
     else:
-        print('ℹ️  Utilisateur user existe déjà')
+        print('ℹ️  Utilisateur simple existe déjà')
     
-    print('\n🎉 Configuration des utilisateurs terminée!')
+    print('\n🎉 Configuration terminée!')
+    print('\n📊 Résumé:')
+    print(f'  - 1 Super Admin (accès global)')
+    print(f'  - 1 Entreprise: {company.name}')
+    print(f'  - 3 Utilisateurs de l\'entreprise (admin, supervisor, user)')
 
 if __name__ == '__main__':
     create_test_users()
