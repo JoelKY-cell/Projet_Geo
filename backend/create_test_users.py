@@ -42,16 +42,16 @@ def create_test_users():
     
     # Admin de l'entreprise
     if not User.objects.filter(username='admin').exists():
-        admin = User.objects.create_user(
+        admin = User(
             username='admin',
             email='admin@tangagps.com',
-            password='admin123',
             first_name='Admin',
-            last_name='Company'
+            last_name='Company',
+            role='admin',
+            company=company,
+            is_staff=True
         )
-        admin.role = 'admin'
-        admin.company = company
-        admin.is_staff = True
+        admin.set_password('admin123')
         admin.save()
         print('✅ Admin entreprise créé')
     else:
@@ -59,15 +59,15 @@ def create_test_users():
     
     # Superviseur
     if not User.objects.filter(username='supervisor').exists():
-        supervisor = User.objects.create_user(
+        supervisor = User(
             username='supervisor',
             email='supervisor@tangagps.com',
-            password='super123',
             first_name='Super',
-            last_name='Visor'
+            last_name='Visor',
+            role='supervisor',
+            company=company
         )
-        supervisor.role = 'supervisor'
-        supervisor.company = company
+        supervisor.set_password('super123')
         supervisor.save()
         print('✅ Superviseur créé')
     else:
@@ -75,15 +75,15 @@ def create_test_users():
     
     # Utilisateur simple
     if not User.objects.filter(username='user').exists():
-        user = User.objects.create_user(
+        user = User(
             username='user',
             email='user@tangagps.com',
-            password='user123',
             first_name='Simple',
-            last_name='User'
+            last_name='User',
+            role='user',
+            company=company
         )
-        user.role = 'user'
-        user.company = company
+        user.set_password('user123')
         user.save()
         print('✅ Utilisateur simple créé')
     else:
