@@ -2,11 +2,11 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import CompanyViewSet, UserViewSet, dashboard_stats
 
-router = DefaultRouter()
+router = DefaultRouter(trailing_slash=False)
 router.register(r'companies', CompanyViewSet)
 router.register(r'users', UserViewSet, basename='user')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include((router.urls, 'core'))),
     path('dashboard/', dashboard_stats, name='dashboard-stats'),
 ]
